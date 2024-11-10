@@ -48,4 +48,28 @@ public class UserService {
         return userRepository.findByUsername(username);
     }
 
+    @Transactional
+    public User updateUser(Long userId, User updatedUser) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found with ID: " + userId));
+
+        if (updatedUser.getUsername() != null) {
+            user.setUsername(updatedUser.getUsername());
+        }
+        if (updatedUser.getPassword() != null) {
+            user.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
+        }
+        if (updatedUser.getRoles() != null) {
+            user.setRoles(updatedUser.getRoles());
+        }
+
+        return userRepository.save(user);
+    }
+
+    public void deleteUser(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found with ID: " + userId));
+        userRepository.delete(user);
+    }
+
 }
